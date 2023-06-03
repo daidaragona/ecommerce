@@ -1,0 +1,4 @@
+redis==4.5.5
+black==23.3.0
+fastapi==0.95.2
+uvicorn==0.22.0

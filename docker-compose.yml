@@ -1,0 +1,31 @@
+version: "3.6"
+services:
+  api:
+    user: ${UID}:${GID}
+    image: fastapi
+    build:
+      args:
+        - UID=${UID}
+        - GID=${GID}
+      context: ./api
+      target: build
+    ports:
+      - "80-88:8000"
+    depends_on:
+      - redis
+      - model
+
+  redis:
+    image: redis:6.2.6
+
+  model:
+    user: ${UID}:${GID}
+    image: ml_service
+    build:
+      args:
+        - UID=${UID}
+        - GID=${GID}
+      context: ./model
+      target: build
+    depends_on:
+      - redis
