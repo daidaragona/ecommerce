@@ -6,7 +6,7 @@ NLP_MODEL_NAME = "bert-base-cased"
 DEVICE = "cpu"
 WORKERS = 8
 TOKENIZER = TOKENIZER = transformers.AutoTokenizer.from_pretrained(NLP_MODEL_NAME)
-MODEL_PATH="weights/bert_model_v1.pt"
+MODEL_PATH = "./weights/bert_model_v1.pt"
 # REDIS
 # Queue name
 REDIS_QUEUE = "service_queue"

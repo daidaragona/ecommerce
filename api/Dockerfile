@@ -20,4 +20,4 @@ WORKDIR /home/mlapi/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 FROM base as build
-ENTRYPOINT ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]
+ENTRYPOINT ["uvicorn", "app:app", "--reload","--host", "0.0.0.0", "--port", "80"]
