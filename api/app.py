@@ -15,4 +15,5 @@ async def run_prediction(request: Request):
     input_string = await request.body()
     print(input_string)
     result = model_predict(input_string)
+    print(result)
     return {"result": result}

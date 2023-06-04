@@ -6,7 +6,7 @@ import redis
 import settings
 from bert import BertModel
 from data import get_categories
-from utils import tokenize_dataset
+from utils import parse, tokenize_dataset
 
 db = redis.Redis(
     db=settings.REDIS_DB_ID, port=settings.REDIS_PORT, host=settings.REDIS_IP
@@ -60,7 +60,8 @@ def classify_process():
     while True:
         _, msg = db.brpop(settings.REDIS_QUEUE)
         msg = json.loads(msg)
-        categories = predict(msg["text"])
+        l1, l2, l3, l4, l5, l6, l7 = predict(msg["text"])
+        categories = parse(l1, l2, l3, l4, l5, l6, l7)
         pred = {"prediction": categories}
         db.set(msg["id"], json.dumps(pred))
         # Sleep for a bit

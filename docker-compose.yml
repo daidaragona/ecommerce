@@ -40,3 +40,6 @@ services:
     - type: bind
       source: ./model/ml_service.py
       target: /src/ml_service.py
+    - type: bind
+      source: ./model/settings.py
+      target: /src/settings.py
