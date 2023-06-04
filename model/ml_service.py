@@ -66,3 +66,9 @@ def classify_process():
         db.set(msg["id"], json.dumps(pred))
         # Sleep for a bit
         time.sleep(settings.SERVER_SLEEP)
+
+
+if __name__ == "__main__":
+    # Now launch process
+    print("Launching ML service...")
+    classify_process()

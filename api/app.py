@@ -10,10 +10,15 @@ async def root():
     return {"message": "Hello World"}
 
 
+@app.post("/test")
+async def test(payload: dict):
+    input_string = payload.get("input")
+    return input_string
+
+
 @app.post("/predict")
-async def run_prediction(request: Request):
-    input_string = await request.body()
-    print(input_string)
+async def run_prediction(payload: dict):
+    input_string = payload.get("input")
     result = model_predict(input_string)
     print(result)
     return {"result": result}
