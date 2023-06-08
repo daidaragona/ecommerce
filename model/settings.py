@@ -7,6 +7,9 @@ DEVICE = "cpu"
 WORKERS = 8
 TOKENIZER = TOKENIZER = transformers.AutoTokenizer.from_pretrained(NLP_MODEL_NAME)
 MODEL_PATH = "weights/bert_model_v1.pt"
+WEIGHTS_URL = (
+    "https://drive.google.com/uc?id=1OLpIpBh_Lu6AyMO9m_ovVRZ3JVW62nOf&confirm=t"
+)
 # REDIS
 # Queue name
 REDIS_QUEUE = "service_queue"

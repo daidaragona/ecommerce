@@ -21,11 +21,9 @@ df_products["category"] = df_products["category"].apply(
     ]
 )
 
-# Define the number of levels/columns you want to create
-num_levels = 7
 
 # Create the new columns
-for i in range(1, num_levels + 1):
+for i in range(1, 7 + 1):
     level_name = "level_" + str(i)
     df_products[level_name] = df_products["category"].apply(
         lambda x: x[i - 1] if len(x) >= i else "NA"

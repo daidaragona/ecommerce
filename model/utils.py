@@ -1,10 +1,20 @@
-from data import get_categories
 import pandas as pd
+import gdown
+import os
+import torch.nn.functional as F
+from data import get_categories
 from multiprocessing import Pool
 from typing import List
-from settings import TOKENIZER, WORKERS
+from settings import MODEL_PATH, TOKENIZER, WEIGHTS_URL, WORKERS
 
-categories= get_categories()
+categories = get_categories()
+
+
+def get_weights():
+    # Download weights from google for ber model
+    if not os.path.exists(MODEL_PATH):
+        gdown.download(WEIGHTS_URL, MODEL_PATH, quiet=False)
+
 
 def tokenize_dataset(dataset: pd.DataFrame) -> pd.DataFrame:
     """Tokenize dataset. Add new column with encoded text.
@@ -52,17 +62,31 @@ def invert_dict(dictionary):
             inverted_dict[sub_value][key] = sub_key
     return inverted_dict
 
-def parse(level_1,level_2,level_3,level_4,level_5,level_6,level_7):
-  search_categories=invert_dict(categories)
-  result = []
-  result.append(search_categories[level_1]["level_1"])
-  result.append(search_categories[level_2]["level_2"])
-  result.append(search_categories[level_3]["level_3"])
-  result.append(search_categories[level_4]["level_4"])
-  result.append(search_categories[level_5]["level_5"])
-  result.append(search_categories[level_6]["level_6"])
-  result.append(search_categories[level_7]["level_7"])
-  result = list(filter(lambda x: x != 'NA', result))
-  return result
+
+def parse_predictions(l1, l2, l3, l4, l5, l6, l7):
+    search_categories = invert_dict(categories)
+    result = []
+    result.append(search_categories[l1.argmax(1).item()]["level_1"])
+    result.append(search_categories[l2.argmax(1).item()]["level_2"])
+    result.append(search_categories[l3.argmax(1).item()]["level_3"])
+    result.append(search_categories[l4.argmax(1).item()]["level_4"])
+    result.append(search_categories[l5.argmax(1).item()]["level_5"])
+    result.append(search_categories[l6.argmax(1).item()]["level_6"])
+    result.append(search_categories[l7.argmax(1).item()]["level_7"])
+    result = list(set(filter(lambda x: x != "NA", result)))
+    return result
 
 
+def parse_probabilities(l1, l2, l3, l4, l5, l6, l7):
+    result = []
+    levels = [l1, l2, l3, l4, l5, l6, l7]
+    for level in levels:
+        max = F.softmax(level, dim=1).max(1)
+        if max.indices.item() != 0:
+            result.append(round(max.values.item(), 2))
+    return result
+
+
+def combine_labels_with_probabilities(labels, probabilities):
+    combined = [f"{label} {prob:.2f}%" for label, prob in zip(labels, probabilities)]
+    return combined

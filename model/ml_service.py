@@ -6,7 +6,13 @@ import redis
 import settings
 from bert import BertModel
 from data import get_categories
-from utils import parse, tokenize_dataset
+from utils import (
+    combine_labels_with_probabilities,
+    get_weights,
+    parse_predictions,
+    parse_probabilities,
+    tokenize_dataset,
+)
 
 db = redis.Redis(
     db=settings.REDIS_DB_ID, port=settings.REDIS_PORT, host=settings.REDIS_IP
@@ -38,15 +44,7 @@ def predict(input):
     l1, l2, l3, l4, l5, l6, l7 = model(
         input_ids.unsqueeze(0), attention_mask.unsqueeze(0)
     )
-    return (
-        l1.argmax(1).item(),
-        l2.argmax(1).item(),
-        l3.argmax(1).item(),
-        l4.argmax(1).item(),
-        l5.argmax(1).item(),
-        l6.argmax(1).item(),
-        l7.argmax(1).item(),
-    )
+    return l1, l2, l3, l4, l5, l6, l7
 
 
 def classify_process():
@@ -61,7 +59,9 @@ def classify_process():
         _, msg = db.brpop(settings.REDIS_QUEUE)
         msg = json.loads(msg)
         l1, l2, l3, l4, l5, l6, l7 = predict(msg["text"])
-        categories = parse(l1, l2, l3, l4, l5, l6, l7)
+        labels = parse_predictions(l1, l2, l3, l4, l5, l6, l7)
+        probabilities = parse_probabilities(l1, l2, l3, l4, l5, l6, l7)
+        categories = combine_labels_with_probabilities(labels, probabilities)
         pred = {"prediction": categories}
         db.set(msg["id"], json.dumps(pred))
         # Sleep for a bit
@@ -71,4 +71,5 @@ def classify_process():
 if __name__ == "__main__":
     # Now launch process
     print("Launching ML service...")
+    get_weights()
     classify_process()

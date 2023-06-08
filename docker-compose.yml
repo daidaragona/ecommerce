@@ -14,13 +14,6 @@ services:
     depends_on:
       - redis
       - model
-    volumes:
-      - type: bind
-        source: ./api/middleware.py
-        target: /home/mlapi/middleware.py
-      - type: bind
-        source: ./api/app.py
-        target: /home/mlapi/app.py
 
   redis:
     image: redis:6.2.6
@@ -38,10 +31,3 @@ services:
       target: build
     depends_on:
       - redis
-    volumes:
-    - type: bind
-      source: ./model/ml_service.py
-      target: /src/ml_service.py
-    - type: bind
-      source: ./model/settings.py
-      target: /src/settings.py

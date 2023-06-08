@@ -5,4 +5,5 @@ pandas==2.0.2
 redis==4.5.5
 black==23.3.0
 fastapi
-uvicorn==0.22.0
+uvicorn==0.22.
+gdown==4.6.0
