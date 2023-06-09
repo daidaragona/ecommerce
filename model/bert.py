@@ -10,11 +10,21 @@ from settings import BERT_EMBEDDING_SIZE
 
 
 class BertModel(pl.LightningModule):
-    """This model uses a BERT model for the text encoding.
-    And it has 3 classifiers for the 3 levels of the hierarchy.
+    """BERT model for text encoding with hierarchical classification.
+
+    This model utilizes a BERT-based text encoder and consists of 7 classifiers
+    that correspond to the 7 levels of the classification hierarchy.
 
     Args:
         pl (LightningModule): Base class for all Lightning modules.
+        nlp_model (str): The pre-trained BERT model name or path.
+        level_1_labels (int): Number of labels for level 1 classification.
+        level_2_labels (int): Number of labels for level 2 classification.
+        level_3_labels (int): Number of labels for level 3 classification.
+        level_4_labels (int): Number of labels for level 4 classification.
+        level_5_labels (int): Number of labels for level 5 classification.
+        level_6_labels (int): Number of labels for level 6 classification.
+        level_7_labels (int): Number of labels for level 7 classification.
     """
 
     def __init__(
@@ -79,6 +89,16 @@ class BertModel(pl.LightningModule):
         self.loss = nn.CrossEntropyLoss()
 
     def forward(self, input_ids, attention_mask):
+        """
+        Forward pass of the model.
+
+        Args:
+            input_ids (tensor): Input token IDs.
+            attention_mask (tensor): Attention mask for input.
+
+        Returns:
+            tuple: Output of the model at each classification level.
+        """
         x = self.text_encoder(
             input_ids=input_ids, attention_mask=attention_mask, return_dict=False
         )[1]
@@ -97,7 +117,16 @@ class BertModel(pl.LightningModule):
         level_7 = self.level_7_classifier(x7)
         return level_1, level_2, level_3, level_4, level_5, level_6, level_7
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch):
+        """
+        Training step of the model.
+
+        Args:
+            batch (tuple): Batch data.
+
+        Returns:
+            tensor: Loss value.
+        """
         (
             input_ids,
             attention_mask,
@@ -197,6 +226,12 @@ class BertModel(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
+        """
+        Configure the optimizer for training.
+
+        Returns:
+            Optimizer: The configured optimizer.
+        """
         optimizer = torch.optim.AdamW(
             self.parameters(),
             lr=2e-5,

@@ -7,24 +7,24 @@ from multiprocessing import Pool
 from typing import List
 from settings import MODEL_PATH, TOKENIZER, WEIGHTS_URL, WORKERS
 
+# Get category mappings
 categories = get_categories()
 
 
 def get_weights():
-    # Download weights from google for ber model
+    """Download the pre-trained weights for the BERT model if they don't exist."""
     if not os.path.exists(MODEL_PATH):
         gdown.download(WEIGHTS_URL, MODEL_PATH, quiet=False)
 
 
 def tokenize_dataset(dataset: pd.DataFrame) -> pd.DataFrame:
-    """Tokenize dataset. Add new column with encoded text.
-    text is a concatenation of name and description.
+    """Tokenize the dataset and add a new column with the encoded text.
 
     Args:
-        dataset (pd.DataFrame): dataset to tokenize
+        dataset (pd.DataFrame): The dataset to tokenize.
 
     Returns:
-        pd.DataFrame: tokenized dataset with a new column "encoded"
+        pd.DataFrame: The tokenized dataset with a new column "encoded".
     """
     dataset = dataset[dataset.text.notna()]
     with Pool(WORKERS) as p:
@@ -37,13 +37,13 @@ def tokenize_dataset(dataset: pd.DataFrame) -> pd.DataFrame:
 
 
 def encode(text: str) -> List[int]:
-    """Encode text using BERT tokenizer.
+    """Encode the text using the BERT tokenizer.
 
     Args:
-        text (str): text to encode
+        text (str): The text to encode.
 
     Returns:
-        List[int]: encoded text
+        List[int]: The encoded text.
     """
     tokens = TOKENIZER(
         text, padding="max_length", max_length=512, truncation=True, return_tensors="pt"
@@ -54,6 +54,14 @@ def encode(text: str) -> List[int]:
 
 
 def invert_dict(dictionary):
+    """Invert a nested dictionary.
+
+    Args:
+        dictionary (dict): The nested dictionary to invert.
+
+    Returns:
+        dict: The inverted dictionary.
+    """
     inverted_dict = {}
     for key, value in dictionary.items():
         for sub_key, sub_value in value.items():
@@ -64,6 +72,14 @@ def invert_dict(dictionary):
 
 
 def parse_predictions(l1, l2, l3, l4, l5, l6, l7):
+    """Parse the predictions from the model into a list of category labels.
+
+    Args:
+        l1, l2, l3, l4, l5, l6, l7: The predictions for each level of the hierarchy.
+
+    Returns:
+        list: The list of category labels.
+    """
     search_categories = invert_dict(categories)
     result = []
     result.append(search_categories[l1.argmax(1).item()]["level_1"])
@@ -78,6 +94,14 @@ def parse_predictions(l1, l2, l3, l4, l5, l6, l7):
 
 
 def parse_probabilities(l1, l2, l3, l4, l5, l6, l7):
+    """Parse the probabilities from the model predictions.
+
+    Args:
+        l1, l2, l3, l4, l5, l6, l7: The predictions for each level of the hierarchy.
+
+    Returns:
+        list: The list of probabilities.
+    """
     result = []
     levels = [l1, l2, l3, l4, l5, l6, l7]
     for level in levels:
@@ -88,5 +112,14 @@ def parse_probabilities(l1, l2, l3, l4, l5, l6, l7):
 
 
 def combine_labels_with_probabilities(labels, probabilities):
+    """Combine category labels with their corresponding probabilities.
+
+    Args:
+        labels (list): The list of category labels.
+        probabilities (list): The list of probabilities.
+
+    Returns:
+        list: The combined labels and probabilities.
+    """
     combined = [f"{label} {prob:.2f}%" for label, prob in zip(labels, probabilities)]
     return combined

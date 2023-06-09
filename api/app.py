@@ -18,11 +18,26 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
+    """
+    Default route that returns a test message.
+
+    Returns:
+        dict: A dictionary containing a test message.
+    """
     return {"message": "Test OK"}
 
 
 @app.post("/predict")
 async def run_prediction(payload: dict):
+    """
+    Endpoint for running a prediction.
+
+    Args:
+        payload (dict): A dictionary containing the input data.
+
+    Returns:
+        dict: A dictionary containing the prediction result.
+    """
     input_string = payload.get("input")
     result = model_predict(input_string)
     print(result)
