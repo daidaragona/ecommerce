@@ -4,7 +4,7 @@ This folder contains the code for the model component of the project.
 
 ## Description
 
-The Model folder houses the implementation of the machine learning model used in the project. It includes the training, evaluation, and prediction logic.
+The Model folder houses the implementation of the machine learning model used in the project. It includes the training and prediction logic.
 
 ## Dependencies
 
