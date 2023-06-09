@@ -1,5 +1,6 @@
-import transformers
 import os
+
+import transformers
 
 BERT_EMBEDDING_SIZE = 768
 NLP_MODEL_NAME = "bert-base-cased"

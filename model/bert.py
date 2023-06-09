@@ -3,10 +3,9 @@ import pandas as pd
 import torch
 import torch.nn.functional as F
 import transformers
+from settings import BERT_EMBEDDING_SIZE
 from torch import nn
 from torch.utils.data import DataLoader
-
-from settings import BERT_EMBEDDING_SIZE
 
 
 class BertModel(pl.LightningModule):

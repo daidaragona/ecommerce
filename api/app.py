@@ -1,7 +1,8 @@
 import json
+
 from fastapi import FastAPI, Request
-from middleware import model_predict
 from fastapi.middleware.cors import CORSMiddleware
+from middleware import model_predict
 
 app = FastAPI()
 

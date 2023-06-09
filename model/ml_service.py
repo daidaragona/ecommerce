@@ -1,9 +1,10 @@
 import json
 import time
-import torch
+
 import pandas as pd
 import redis
 import settings
+import torch
 from bert import BertModel
 from data import get_categories
 from utils import (

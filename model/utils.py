@@ -1,10 +1,11 @@
-import pandas as pd
-import gdown
 import os
-import torch.nn.functional as F
-from data import get_categories
 from multiprocessing import Pool
 from typing import List
+
+import gdown
+import pandas as pd
+import torch.nn.functional as F
+from data import get_categories
 from settings import MODEL_PATH, TOKENIZER, WEIGHTS_URL, WORKERS
 
 # Get category mappings
